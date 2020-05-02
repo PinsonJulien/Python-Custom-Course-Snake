@@ -46,20 +46,38 @@ class Player :
             self.position = new_position       
     
 class Game :
+
+    #Dictionnaire des type de bonbons et leur valeur en point.
+    candies = {'Bonbon': 1,
+                'Super bonbon': 5,
+                'Mega bonbon': 10,
+                'Faux bonbon': -2}
     
     def __init__(self, player, size=10):
         self.player = player
         self.board_size = size
-        self.candies = []
+        self.candies_position = []
+        self.candies_type = []
         
     # Dessine le plateau
     def draw(self):
         for line in range(self.board_size):
             for col in range(self.board_size):
-                if (line,col) in self.candies :
-                    print("*",end=" ")
+                if (line,col) in self.candies_position :
+                    
+                    # On affiche les bonbons sous une autre forme en fonction de leur type.
+                    candy_index = self.candies_position.index((line,col))
+                    if self.candies_type[candy_index] == 'Bonbon':
+                        print("©",end=" ")
+                    elif self.candies_type[candy_index] == 'Super bonbon' :
+                        print("£",end=" ")
+                    elif self.candies_type[candy_index] == 'Mega bonbon' :
+                        print("¶",end=" ")
+                    elif self.candies_type[candy_index] == 'Faux bonbon':
+                        print("X",end=" ")
+            
                 elif (line,col) == self.player.position :
-                    print("O",end=" ")
+                    print("0",end=" ")
                 else : 
                     print(".",end=" ")
             print()
@@ -67,14 +85,20 @@ class Game :
     # Fait apparaitre un bonbon
     def pop_candy(self):
         new_candy = (random.choice(range(self.board_size)),random.choice(range(self.board_size)))
+
+        #Désormais, il est possible d'avoir différent type de bonbon généré que l'on récupère dans le dictionnaire
+        candy_type = random.choice(list(Game.candies))
         if new_candy not in self.candies :
-            self.candies.append(new_candy)
+            # On ajoute à 2 lists : La position et le type de bonbons généré.
+            self.candies_position.append(new_candy)
+            self.candies_type.append(candy_type)
+            print(candy_type)
             
     # Regarde s'il y a un bonbon à prendre (et le prend)
     def check_candy(self):
-        if self.player.position in self.candies:
+        if self.player.position in self.candies_position:
             self.player.points += 1
-            self.candies.remove(self.player.position)
+            self.candies_position.remove(self.player.position)
     
         
         

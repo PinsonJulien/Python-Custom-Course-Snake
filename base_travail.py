@@ -14,6 +14,17 @@ class Player :
         self.name = name
         self.points = points
         self.position = start
+
+    # Définit la position de l'axe choisit et vérifie si l'on passe ou non un mur.
+    def SetPosition (self, axis, move) :
+        if self.position[axis] == 0 and move[axis] == -1:
+            pos = 9
+        elif self.position[axis] == 9 and move[axis] == 1:
+            pos = 0
+        else :
+            pos = self.position[axis] + move[axis]
+
+        return pos
     
     def move (self) :
         
@@ -22,10 +33,12 @@ class Player :
             key = input("Mouvement (z,q,s,d) : ")
         
         move = Player.keyboard_key[key]
-        self.position = (self.position[0] + move[0], self.position[1] + move[1])
-        
-    
 
+        # Le passage du mur ne se fait que si l'on devrait passer à une valeur -1 ou 10
+        # qui ne sont pas comprises dans le tableau de 10x10 car un axe >=0 et <=9.
+        new_position = ( self.SetPosition(0, move), self.SetPosition(1, move) )
+        self.position = new_position       
+    
 class Game :
     
     def __init__(self, player, size=10):

@@ -116,7 +116,6 @@ class Game :
         print("----- Terminé -----")
         print()
         print("Nombre de bonbons mangés :")
-
         # Chaque type de bonbon mangés sont affichés, avec leur nombre mangés durant la partie, les points qu'ils octroient, le total.
         # Puis le score final est affiché.
         for candy, points in Game.candies.items():
@@ -127,6 +126,7 @@ class Game :
         
     # Joue une partie complète
     def play(self):
+        print()
         print("--- Début de la partie ---")
         print()
         self.draw()
@@ -147,9 +147,18 @@ class Game :
         
         # Partie finie, on affiche le score final.
         self.score_board()
-
         # Puis on enregistre dans le fichier des meilleurs score.
-        #g.play()
+        
+        # Demande si l'on souhaite faire une nouvelle partie, en cas de refus, on ferme le jeu.
+        print()
+        key = input("Nouvelle partie ? O/n : ")
+        while key.upper() not in ('O','N') :
+            key = input("Nouvelle partie ? O/n : ")
+
+        if key.upper() == 'O':
+            new_game()
+        else :
+            exit()
 
     @staticmethod
     # retourne le moment où le jeu est censé être fini
@@ -157,13 +166,17 @@ class Game :
         delta = datetime.timedelta(minutes=delta_minute, seconds=delta_second)
         end = datetime.datetime.today() + delta
         return end
-        
 
-if __name__ == "__main__" :
+# Pour lancer une partie de jeu, utile pour pouvoir relancer une partie.
+def new_game():
     player_name = input("Veuillez entrer votre nom de joueur : ")
     p = Player(player_name)
     g = Game(p)
     g.play()
+
+
+if __name__ == "__main__" :
+    new_game()
 
     
     

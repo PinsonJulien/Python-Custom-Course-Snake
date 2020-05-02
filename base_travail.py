@@ -58,6 +58,7 @@ class Game :
         self.board_size = size
         self.candies_position = []
         self.candies_type = []
+        self.candies_ate = []
         
     # Dessine le plateau
     def draw(self):
@@ -81,30 +82,53 @@ class Game :
                 else : 
                     print(".",end=" ")
             print()
+        print()
             
     # Fait apparaitre un bonbon
     def pop_candy(self):
         new_candy = (random.choice(range(self.board_size)),random.choice(range(self.board_size)))
 
-        #Désormais, il est possible d'avoir différent type de bonbon généré que l'on récupère dans le dictionnaire
+        #Désormais, il est possible d'avoir différent type de bonbon générés que l'on récupère dans le dictionnaire
         candy_type = random.choice(list(Game.candies))
-        if new_candy not in self.candies :
+        if new_candy not in self.candies_position :
             # On ajoute à 2 lists : La position et le type de bonbons généré.
             self.candies_position.append(new_candy)
             self.candies_type.append(candy_type)
-            print(candy_type)
             
     # Regarde s'il y a un bonbon à prendre (et le prend)
     def check_candy(self):
         if self.player.position in self.candies_position:
-            self.player.points += 1
+            # Pour utiliser le même index que celui de la position.
+            candy_index = self.candies_position.index(self.player.position)
+            candy_type = self.candies_type[candy_index]
+            # On incrémente les points avec la valeur du bonbon mangé, qui est enregistrée dans le dictionnaire
+            self.player.points += Game.candies.get(candy_type)
+
+            # On enregistre le bonbon mangé dans un liste pour le tableau des scores.
+            self.candies_ate.append(candy_type)
+            
+            # On retire des 2 listes la position et le type de bonbon.
             self.candies_position.remove(self.player.position)
-    
-        
+            self.candies_type.pop(candy_index)
+
+    # Affiche le tableau de score de fin de partie.
+    def score_board(self):
+        print("----- Terminé -----")
+        print()
+        print("Nombre de bonbons mangés :")
+
+        # Chaque type de bonbon mangés sont affichés, avec leur nombre mangés durant la partie, les points qu'ils octroient, le total.
+        # Puis le score final est affiché.
+        for candy, points in Game.candies.items():
+            total = self.candies_ate.count(candy)*points
+            print (candy, ': ', self.candies_ate.count(candy),'*', points, '=', total,' points')
+        print()        
+        print(self.player.name + ", vous avez fait un score de", self.player.points, "points !" )
         
     # Joue une partie complète
     def play(self):
         print("--- Début de la partie ---")
+        print()
         self.draw()
         
         end = Game.end_time(1,0)
@@ -121,10 +145,11 @@ class Game :
             
             now = datetime.datetime.today()
         
-        
-        print("----- Terminé -----")
-        print("Vous avez", self.player.points, "points" )
+        # Partie finie, on affiche le score final.
+        self.score_board()
 
+        # Puis on enregistre dans le fichier des meilleurs score.
+        #g.play()
 
     @staticmethod
     # retourne le moment où le jeu est censé être fini
@@ -134,11 +159,9 @@ class Game :
         return end
         
 
-
-
 if __name__ == "__main__" :
-     
-    p = Player("Moi")
+    player_name = input("Veuillez entrer votre nom de joueur : ")
+    p = Player(player_name)
     g = Game(p)
     g.play()
 

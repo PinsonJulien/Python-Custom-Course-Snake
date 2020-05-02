@@ -14,6 +14,7 @@ class Player :
         self.name = name
         self.points = points
         self.position = start
+        self.last_position = start
 
     # Définit la position de l'axe choisit et vérifie si l'on passe ou non un mur.
     def SetPosition (self, axis, move) :
@@ -37,7 +38,12 @@ class Player :
         # Le passage du mur ne se fait que si l'on devrait passer à une valeur -1 ou 10
         # qui ne sont pas comprises dans le tableau de 10x10 car un axe >=0 et <=9.
         new_position = ( self.SetPosition(0, move), self.SetPosition(1, move) )
-        self.position = new_position       
+
+        # On empêche le joueur de retourner en arrière.
+        # La variable last_position permet de sauvegarder l'ancienne position avant son changement.
+        if self.last_position != new_position:
+            self.last_position = self.position
+            self.position = new_position       
     
 class Game :
     

@@ -111,6 +111,18 @@ class Game :
             self.candies_position.remove(self.player.position)
             self.candies_type.pop(candy_index)
 
+            # Si l'on mange un mega bonbon, on fait spawn 5 bonbons bonus.
+            if candy_type == 'Mega bonbon':
+                for i in range (5):
+                    self.pop_candy()
+            # Si l'on mange un faux bonbon, on efface tous les bonbons du plateau.
+            elif candy_type == 'Faux bonbon':
+                self.candies_position = []
+                self.candies_type = []
+                    
+            
+            
+
     # Affiche le tableau de score de fin de partie.
     def score_board(self):
         print("----- Terminé -----")

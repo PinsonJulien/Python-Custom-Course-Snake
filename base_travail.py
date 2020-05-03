@@ -2,6 +2,9 @@
 
 import random
 import datetime
+# modules pour le high-score
+import json
+from operator import itemgetter
 
 class Player :
     
@@ -124,7 +127,7 @@ class Game :
             
 
     # Affiche le tableau de score de fin de partie.
-    def score_board(self):
+    def ScoreBoard(self):
         print("----- Terminé -----")
         print()
         print("Nombre de bonbons mangés :")
@@ -135,7 +138,41 @@ class Game :
             print (candy, ': ', self.candies_ate.count(candy),'*', points, '=', total,' points')
         print()        
         print(self.player.name + ", vous avez fait un score de", self.player.points, "points !" )
+
+    # Enregistrement des nouveau scores et affichage du tableau des high-scores. 
+    def HighScores(self):
+        # Si il y as déjà des scores, on les récupères, sinon on met en place la liste des high-scores.
+        try:
+            with open('high-scores.json','r') as file:
+                high_scores = json.load(file)
+        except FileNotFoundError:
+            high_scores = []
+
+        # On enregistre le score du joueur
+        high_scores.append((self.player.name, self.player.points))
+
+        # On trie par le score le plus haut, et on ne garde que 10 valeurs MAX dans la liste.
+        high_scores = sorted(high_scores, key = itemgetter(1), reverse = True)[:10]
+
+        # On enregistre la liste mise à jour dans un fichier JSON.
+        # Si il n'existait pas, il est créé via "w+"
+        with open('high-scores.json', 'w+') as file:
+            json.dump(high_scores, file)
+
+        # Affichage des high scores dans l'ordre.
+        print()
+        print('      +-+-+-+-+-+-+')
+        print('      +HIGH SCORES+')
+        print('      +-+-+-+-+-+-+')
+        print()
         
+        for rank, high_score in enumerate(high_scores):
+            #Si le joueur est entré dans les high-scores, on affiche sa position.
+            if high_score[0] == self.player.name and high_score[1] == self.player.points:
+                print('Vous ->', high_score[0], '  ', high_score[1])
+            else :
+                print(rank+1,')    ', high_score[0], '  ', high_score[1])
+                
     # Joue une partie complète
     def play(self):
         print()
@@ -158,8 +195,9 @@ class Game :
             now = datetime.datetime.today()
         
         # Partie finie, on affiche le score final.
-        self.score_board()
-        # Puis on enregistre dans le fichier des meilleurs score.
+        self.ScoreBoard()
+        # Puis on enregistre dans le fichier des meilleurs score, et on les affiches.
+        self.HighScores()
         
         # Demande si l'on souhaite faire une nouvelle partie, en cas de refus, on ferme le jeu.
         print()
